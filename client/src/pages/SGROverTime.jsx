@@ -3,21 +3,24 @@ import { getSGROverTime } from '../services/api';
 import LineChart from '../components/charts/LineChart';
 import HorizontalChart from '../components/charts/HorizontalChart';
 import VerticalChart from '../components/charts/VerticalChart';
-import Navbar from '../components/Navbar'
-
+import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 const SGROverTime = () => {
     const [chartData, setChartData] = useState({});
-    const [timeframe, setTimeframe] = useState('monthly'); // Default timeframe set to 'daily'
+    const [timeframe, setTimeframe] = useState('monthly'); // Default timeframe set to 'monthly'
     const [chartType, setChartType] = useState('line'); // Default chart type set to 'line'
+    const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const { data } = await getSGROverTime();
                 setChartData(data);
+                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 console.error('Error fetching sales data:', error);
+                setLoading(false); // Set loading to false even if there is an error
             }
         };
 
@@ -43,7 +46,7 @@ const SGROverTime = () => {
     const salesData = selectedData.map(item => item.growthRate);
 
     // button css property 
-    const btncol = "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700"
+    const btncol = "text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700";
 
     const chartname = "Sales Growth Rate Over Time";
 
@@ -83,15 +86,21 @@ const SGROverTime = () => {
                 </div>
             </div>
 
-            {/* Conditional rendering for different chart types */}
-            {chartType === 'line' && (
-                <LineChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
-            )}
-            {chartType === 'bar' && (
-                <VerticalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
-            )}
-            {chartType === 'horizontalBar' && (
-                <HorizontalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+            {/* Conditional rendering for the loader and charts */}
+            {loading ? (
+                <Loader /> // Display the loader while data is loading
+            ) : (
+                <>
+                    {chartType === 'line' && (
+                        <LineChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                    )}
+                    {chartType === 'bar' && (
+                        <VerticalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                    )}
+                    {chartType === 'horizontalBar' && (
+                        <HorizontalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                    )}
+                </>
             )}
         </div>
     );

@@ -5,19 +5,23 @@ import HorizontalChart from '../components/charts/HorizontalChart';
 import VerticalChart from '../components/charts/VerticalChart';
 import ChartOptions from '../components/ChartOptions';
 import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 const SalesOverTimeChart = () => {
     const [chartData, setChartData] = useState({});
     const [timeframe, setTimeframe] = useState('daily'); // Default timeframe set to 'daily'
     const [chartType, setChartType] = useState('line'); // Default chart type set to 'line'
+    const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const { data } = await getSalesOverTime();
                 setChartData(data);
+                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 console.error('Error fetching sales data:', error);
+                setLoading(false); // Set loading to false even if there is an error
             }
         };
 
@@ -46,29 +50,30 @@ const SalesOverTimeChart = () => {
 
     return (
         <div>
-            <div>
-                <Navbar />
-            </div>
+            <Navbar />
 
-            <div>
+            <ChartOptions
+                timeframe={timeframe}
+                chartType={chartType}
+                setChartType={setChartType}
+                setTimeframe={setTimeframe}
+            />
 
-                <ChartOptions timeframe={timeframe} chartType={chartType} setChartType={setChartType} setTimeframe={setTimeframe} />
-            </div>
-
-            <div>
-
-                {/* Conditional rendering for different chart types */}
-                {chartType === 'line' && (
-                    <LineChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
-                )}
-                {chartType === 'bar' && (
-                    <VerticalChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
-                )}
-                {chartType === 'horizontalBar' && (
-                    <HorizontalChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
-                )}
-            </div>
-
+            {loading ? (
+                <Loader /> // Display the loader while data is loading
+            ) : (
+                <>
+                    {chartType === 'line' && (
+                        <LineChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
+                    )}
+                    {chartType === 'bar' && (
+                        <VerticalChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
+                    )}
+                    {chartType === 'horizontalBar' && (
+                        <HorizontalChart text={"Sales Over Time"} labelname={"sales"} labels={labels} getData={salesData} />
+                    )}
+                </>
+            )}
         </div>
     );
 };

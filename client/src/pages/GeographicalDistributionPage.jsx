@@ -3,6 +3,7 @@ import { Pie } from 'react-chartjs-2';
 import { getGeographicalDistribution } from '../services/api';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -18,21 +19,23 @@ const generateRandomColors = (numColors) => {
 
 const GeographicalDistributionChart = () => {
     const [chartData, setChartData] = useState([]);
+    const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const { data } = await getGeographicalDistribution();
                 setChartData(data);
+                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 console.error('Error fetching geographical distribution data:', error);
+                setLoading(false); // Set loading to false even if there's an error
             }
         };
 
         fetchData();
     }, []);
 
-    // Ensure the data is available and in array format
     const labels = chartData.map(item => item._id || 'Unknown');
     const distributionData = chartData.map(item => item.customerCount || 0);
 
@@ -51,25 +54,21 @@ const GeographicalDistributionChart = () => {
         ],
     };
 
-
-
-    // Render the Pie chart only if data is available
     return (
         <>
             <div>
                 <Navbar />
             </div>
             <div className="grid h-screen place-items-center">
-                {chartData.length > 0 ? (
-                    <div className=" w-full md:w-1/2 lg:w-1/2 xl:w-1/2  ">
+                {loading ? (
+                    <Loader /> // Display the loader while data is loading
+                ) : (
+                    <div className="w-full md:w-1/2 lg:w-1/2 xl:w-1/2">
                         <Pie data={chartDataset} />
                     </div>
-                ) : (
-                    <p>Loading data...</p>
                 )}
             </div>
         </>
-
     );
 };
 

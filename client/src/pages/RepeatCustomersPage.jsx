@@ -5,19 +5,23 @@ import HorizontalChart from '../components/charts/HorizontalChart';
 import VerticalChart from '../components/charts/VerticalChart';
 import ChartOptions from '../components/ChartOptions';
 import Navbar from '../components/Navbar';
+import Loader from '../components/Loader';
 
 const SalesOverTimeChart = () => {
     const [chartData, setChartData] = useState({});
     const [timeframe, setTimeframe] = useState('daily'); // Default timeframe set to 'daily'
     const [chartType, setChartType] = useState('line'); // Default chart type set to 'line'
+    const [loading, setLoading] = useState(true); // Loading state
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const { data } = await getRepeatCustomers();
                 setChartData(data);
+                setLoading(false); // Set loading to false after data is fetched
             } catch (error) {
                 console.error('Error fetching sales data:', error);
+                setLoading(false); // Set loading to false even if there's an error
             }
         };
 
@@ -60,15 +64,21 @@ const SalesOverTimeChart = () => {
             </div>
 
             <div>
-                {/* Conditional rendering for different chart types */}
-                {chartType === 'line' && (
-                    <LineChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
-                )}
-                {chartType === 'bar' && (
-                    <VerticalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
-                )}
-                {chartType === 'horizontalBar' && (
-                    <HorizontalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                {/* Conditional rendering for loader and chart */}
+                {loading ? (
+                    <Loader /> // Display the loader while data is loading
+                ) : (
+                    <>
+                        {chartType === 'line' && (
+                            <LineChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                        )}
+                        {chartType === 'bar' && (
+                            <VerticalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                        )}
+                        {chartType === 'horizontalBar' && (
+                            <HorizontalChart text={chartname} labelname={labelname} labels={labels} getData={salesData} />
+                        )}
+                    </>
                 )}
             </div>
 
