@@ -73,22 +73,6 @@ This project uses a set of custom-built API endpoints to fetch data from a Mongo
 
 ## Folder Structure
 
-├── public/
-├── src/
-│ ├── components/
-│ │ ├── charts/
-│ │ └── Navbar.jsx
-│ ├── pages/
-│ ├── services/
-│ │ └── api.js
-│ ├── App.js
-│ ├── index.js
-│ └── ...
-├── README.md
-├── package.json
-└── ...
-
-
 - **components/charts/**: Contains all chart components like `LineChart`, `PieChart`, etc.
 - **pages/**: Contains page components like `SalesOverTimePage`, `GeographicalDistributionPage`, etc.
 - **services/api.js**: Contains functions for making API calls.
